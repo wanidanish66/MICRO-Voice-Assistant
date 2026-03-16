@@ -5,6 +5,8 @@ import pyttsx3
 r = sr.Recognizer()        # recognizer class helps you to take speech recognition functionality
 engine = pyttsx3.init()             # initilizing pyttsx
 
+PHRASE_TIME_LIMIT = 5  # Set the phrase time limit in seconds
+
 def speak(text):
     engine.say(text)
     engine.runAndWait()
@@ -25,17 +27,17 @@ if __name__ == "__main__":
             with sr.Microphone() as source:
                 r.adjust_for_ambient_noise(source)
                 print("Listening....")
-                audio = r.listen(source, phrase_time_limit=4)
+                audio = r.listen(source, phrase_time_limit=PHRASE_TIME_LIMIT)
 
             word = r.recognize_google(audio).lower()
-            print("Heard", word)
+            print("Heard:", word)
 
-            if "micro" in word.lower():
-                speak("Ya")
+            if "jarvis" in word:
+                speak("Yes")
                 # listen for command
                 with sr.Microphone() as source:
                     print("Micro active....")
-                    audio = r.listen(source, phrase_time_limit=4)
+                    audio = r.listen(source, phrase_time_limit=PHRASE_TIME_LIMIT)
 
                 command = r.recognize_google(audio)
                 processCommand(command)
