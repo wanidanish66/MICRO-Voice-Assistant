@@ -32,7 +32,7 @@ if __name__ == "__main__":
             word = r.recognize_google(audio).lower()
             print("Heard:", word)
 
-            if "jarvis" in word:
+            if "micro" in word:
                 speak("Yes")
                 # listen for command
                 with sr.Microphone() as source:
