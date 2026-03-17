@@ -6,7 +6,7 @@ r = sr.Recognizer()        # recognizer class helps you to take speech recogniti
 engine = pyttsx3.init()             # initilizing pyttsx
 
 PHRASE_TIME_LIMIT = 5  # Set the phrase time limit in seconds
-
+ 
 def speak(text):
     engine.say(text)
     engine.runAndWait()
