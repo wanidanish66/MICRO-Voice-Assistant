@@ -3,6 +3,8 @@ import webbrowser
 import pyttsx3
 import musicLibrary
 import requests
+
+
 recognizer = sr.Recognizer()        # recognizer class helps you to take speech recognition functionality
 engine = pyttsx3.init()             # initilizing pyttsx
 newsapi = "b258ed3179e8414f94df2743db0b0ef2"
@@ -14,22 +16,40 @@ def speak(text):
 def processCommand(c):
     if "open google" in c.lower():
         webbrowser.open("https://google.com")
+    
     elif "open facebook" in c.lower():
         webbrowser.open("https://facebook.com")
-    elif "open facebook" in c.lower():
+
+    elif "open instagram" in c.lower():
         webbrowser.open("https://instagram.com")
-    elif "open facebook" in c.lower():
+
+    elif "open linkdin" in c.lower():
         webbrowser.open("https://linkdin.com")
-    elif "open facebook" in c.lower():
+
+    elif "open github" in c.lower():
         webbrowser.open("https://github.com")
-    elif "open facebook" in c.lower():
+        
+    elif "open youtube" in c.lower():
         webbrowser.open("https://youtube.com")
+
+    # for news
+    elif "open news" in c.lower():
+        print("reading")
+        r = requests.get(f"https://newsapi.org/v2/top-headlines?country=in&apiKey={newsapi}") 
+        if r.status_code == 200:
+            data = r.json()
+
+            articles = data.get('articles', [])
+
+            for article in articles:
+                speak(article['title'])
 
     # for music library
     elif c.lower().startswith("play"):
         song = c.lower().split(" ")[1]
         link = musicLibrary.music[song]
         webbrowser.open(link)
+
 
 if __name__ == "__main__":
     speak("Intializing Micro......")
