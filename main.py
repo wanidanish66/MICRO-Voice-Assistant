@@ -1,17 +1,46 @@
-import speech_recognition as sr     # This allows you to reference the speech_recognition library using the shorter name sr throughout your code
+import speech_recognition as sr     
 import webbrowser
-import pyttsx3
 import musicLibrary
 import requests
+import asyncio
+import edge_tts
+import pygame
+import time
+import os
+import random
+
+responses = [
+    "Yes, I'm listening.",
+    "How can I help you?",
+    "What can I do for you?"
+]
 
 
-recognizer = sr.Recognizer()        # recognizer class helps you to take speech recognition functionality
-engine = pyttsx3.init()             # initilizing pyttsx
+recognizer = sr.Recognizer()        
+pygame.mixer.init(frequency=22050, size=-16, channels=2)
+
 newsapi = "b258ed3179e8414f94df2743db0b0ef2"
 
+async def speak_async(text):
+    file = "voice.mp3"
+
+    communicate = edge_tts.Communicate(
+        text,
+        voice="en-US-JennyNeural"
+    )
+    await communicate.save(file)
+
+    pygame.mixer.music.load(file)
+    pygame.mixer.music.play()
+
+    while pygame.mixer.music.get_busy():
+        time.sleep(0.1)
+
+    pygame.mixer.music.unload()
+    os.remove(file)
+
 def speak(text):
-    engine.say(text)
-    engine.runAndWait()
+    asyncio.run(speak_async(text))
 
 def processCommand(c):
     if "open google" in c.lower():
@@ -32,35 +61,43 @@ def processCommand(c):
     elif "open youtube" in c.lower():
         webbrowser.open("https://youtube.com")
 
-    # for news
-    elif "open news" in c.lower():
-        print("reading")
-        r = requests.get(f"https://newsapi.org/v2/top-headlines?country=in&apiKey={newsapi}") 
-        if r.status_code == 200:
-            data = r.json()
-
-            articles = data.get('articles', [])
-
-            for article in articles:
-                speak(article['title'])
-
     # for music library
     elif c.lower().startswith("play"):
         song = c.lower().split(" ")[1]
         link = musicLibrary.music[song]
         webbrowser.open(link)
 
+    # for news
+    elif "news" in c.lower():
+        print("Fetching news...")
+    r = requests.get(f"https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey={newsapi}")
+    
+    print("Status Code:", r.status_code)
+
+    if r.status_code == 200:
+        data = r.json()
+        articles = data.get('articles', [])
+
+        if not articles:
+            speak("No news found.")
+            return
+
+        for article in articles[:5]:  # limit to 5
+            print(article['title'])
+            speak(article['title'])
+    else:
+        speak("Failed to fetch news")
+
+
 
 if __name__ == "__main__":
     speak("Intializing Micro......")
     while True:
-        # listen for the wake word "Micro"
-        # Use the default microphone as the audio source
         r = sr.Recognizer()
         
         
         print("recognizing....")
-        # recognize speech using bing
+
         try:
             with sr.Microphone(device_index=2) as source:
                 print("Listening....")
@@ -68,7 +105,8 @@ if __name__ == "__main__":
             word = r.recognize_google(audio)
 
             if "hello micro" in word.lower():
-                speak("hello sir")
+                speak(random.choice(responses))
+
 
                 # listen for command
                 with sr.Microphone(device_index=2) as source:
