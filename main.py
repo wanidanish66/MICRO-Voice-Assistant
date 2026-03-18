@@ -19,7 +19,9 @@ responses = [
 recognizer = sr.Recognizer()        
 pygame.mixer.init(frequency=22050, size=-16, channels=2)
 
-newsapi = "b258ed3179e8414f94df2743db0b0ef2"
+newsapi = "b258ed3179e8414f94df2743db0b0ef2"     # api key for news
+
+# -----------------------------speak functionality for micro-----------------------------
 
 async def speak_async(text):
     file = "voice.mp3"
@@ -42,7 +44,10 @@ async def speak_async(text):
 def speak(text):
     asyncio.run(speak_async(text))
 
+
 def processCommand(c):
+    #---------------------------------for opening various applications--------------------- 
+
     if "open google" in c.lower():
         webbrowser.open("https://google.com")
     
@@ -61,13 +66,14 @@ def processCommand(c):
     elif "open youtube" in c.lower():
         webbrowser.open("https://youtube.com")
 
-    # for music library
+    # -----------------------------for music library----------------------------
     elif c.lower().startswith("play"):
         song = c.lower().split(" ")[1]
         link = musicLibrary.music[song]
         webbrowser.open(link)
 
-    # for news
+    #----------------------------- for news command -------------------------------
+
     elif "news" in c.lower():
         print("Fetching news...")
     r = requests.get(f"https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey={newsapi}")
@@ -89,6 +95,7 @@ def processCommand(c):
         speak("Failed to fetch news")
 
 
+#------------------------------this is main content---------------------------------
 
 if __name__ == "__main__":
     speak("Intializing Micro......")
