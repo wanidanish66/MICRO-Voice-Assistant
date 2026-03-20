@@ -59,21 +59,21 @@ def speak(text):
 
 #     return completion.choices[0].message.content
 
-# def aiProcess(command):
-#     client = OpenAI(
-#         api_key="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",
-#         base_url="https://integrate.api.nvidia.com/v1"
-#     )
+def aiProcess(command):
+    client = OpenAI(
+        api_key="nvapi-xxxx",
+        base_url="https://integrate.api.nvidia.com/v1"
+    )
 
-#     completion = client.chat.completions.create(
-#         model="deepseek-ai/deepseek-v3",
-#         messages=[
-#             {"role": "system", "content": "You are a virtual assistant named Micro."},
-#             {"role": "user", "content": command}
-#         ]
-#     )
+    completion = client.chat.completions.create(
+        model="deepseek-ai/deepseek-v3",
+        messages=[
+            {"role": "system", "content": "You are a virtual assistant named Micro."},
+            {"role": "user", "content": command}
+        ]
+    )
 
-#     return completion.choices[0].message.content
+    return completion.choices[0].message.content
 
 def processCommand(c):
     #---------------------------------for opening various applications--------------------- 
@@ -107,25 +107,25 @@ def processCommand(c):
     elif "headlines" in c.lower():
         print("Fetching news...")
         r = requests.get(f"https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey={newsapi}")
-    
+        
         print("Status Code:", r.status_code)
 
-    if r.status_code == 200:
-        data = r.json()
-        articles = data.get('articles', [])
+        if r.status_code == 200:
+            data = r.json()
+            articles = data.get('articles', [])
 
-        if not articles:
-            speak("No news found.")
-            return
+            if not articles:
+                speak("No news found.")
+                return
 
-        for article in articles[:5]:  # limit to 5
-            print(article['title'])
-            speak(article['title'])
+            for article in articles[:5]:
+                print(article['title'])
+                speak(article['title'])
     
-    # else:
-    #     # let open AI handle the request
-    #     output = aiProcess(c)
-    #     speak(output)
+    else:
+        # let open AI handle the request
+        output = aiProcess(c)
+        speak(output)
 
 
 
