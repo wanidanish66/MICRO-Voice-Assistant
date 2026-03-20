@@ -8,6 +8,7 @@ import pygame
 import time
 import os
 import random
+from openai import OpenAI
 
 responses = [
     "Yes, I'm listening.",
@@ -44,6 +45,35 @@ async def speak_async(text):
 def speak(text):
     asyncio.run(speak_async(text))
 
+# ---------------- ai functionality ----------------------
+# def aiProcess(command):
+#     client = OpenAI(api_key="your-openai-api-key")
+
+#     completion = client.chat.completions.create(
+#         model="gpt-4o-mini",  # or another valid model
+#         messages=[
+#             {"role": "system", "content": "You are a virtual assistant named Micro."},
+#             {"role": "user", "content": command}
+#         ]
+#     )
+
+#     return completion.choices[0].message.content
+
+# def aiProcess(command):
+#     client = OpenAI(
+#         api_key="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",
+#         base_url="https://integrate.api.nvidia.com/v1"
+#     )
+
+#     completion = client.chat.completions.create(
+#         model="deepseek-ai/deepseek-v3",
+#         messages=[
+#             {"role": "system", "content": "You are a virtual assistant named Micro."},
+#             {"role": "user", "content": command}
+#         ]
+#     )
+
+#     return completion.choices[0].message.content
 
 def processCommand(c):
     #---------------------------------for opening various applications--------------------- 
@@ -74,11 +104,11 @@ def processCommand(c):
 
     #----------------------------- for news command -------------------------------
 
-    elif "news" in c.lower():
+    elif "headlines" in c.lower():
         print("Fetching news...")
-    r = requests.get(f"https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey={newsapi}")
+        r = requests.get(f"https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey={newsapi}")
     
-    print("Status Code:", r.status_code)
+        print("Status Code:", r.status_code)
 
     if r.status_code == 200:
         data = r.json()
@@ -91,8 +121,12 @@ def processCommand(c):
         for article in articles[:5]:  # limit to 5
             print(article['title'])
             speak(article['title'])
-    else:
-        speak("Failed to fetch news")
+    
+    # else:
+    #     # let open AI handle the request
+    #     output = aiProcess(c)
+    #     speak(output)
+
 
 
 #------------------------------this is main content---------------------------------
