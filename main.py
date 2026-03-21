@@ -48,7 +48,7 @@ def speak(text):
 def aiProcess(command):
     try:
         client = OpenAI(
-            api_key="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",  # 🔴 replace with your key
+            api_key="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", 
             base_url="https://integrate.api.nvidia.com/v1"
         )
 
