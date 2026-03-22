@@ -160,7 +160,7 @@ if __name__ == "__main__":
 
         except sr.WaitTimeoutError:
             pass
-
+  
         except sr.UnknownValueError:
             print("Could not understand")
 
