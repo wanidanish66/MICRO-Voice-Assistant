@@ -20,7 +20,7 @@ responses = [
 recognizer = sr.Recognizer()
 pygame.mixer.init(frequency=22050, size=-16, channels=2)
 
-newsapi = "YOUR API"
+newsapi = "b258ed3179e8414f94df2743db0b0ef2"
 
 # ---------------- SPEAK FUNCTION ----------------
 async def speak_async(text):
@@ -61,7 +61,7 @@ def get_youtube_link(song_name):
 def aiProcess(command):
     try:
         client = OpenAI(
-            api_key="YOUR API",
+            api_key="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",
             base_url="https://integrate.api.nvidia.com/v1"
         )
 
