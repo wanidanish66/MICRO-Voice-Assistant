@@ -1,6 +1,5 @@
-import speech_recognition as sr     
+import speech_recognition as sr
 import webbrowser
-import musicLibrary
 import requests
 import asyncio
 import edge_tts
@@ -8,6 +7,7 @@ import pygame
 import time
 import os
 import random
+from yt_dlp import YoutubeDL
 from openai import OpenAI
 
 # ---------------- RESPONSES ----------------
@@ -17,7 +17,7 @@ responses = [
     "What can I do for you?"
 ]
 
-recognizer = sr.Recognizer()        
+recognizer = sr.Recognizer()
 pygame.mixer.init(frequency=22050, size=-16, channels=2)
 
 newsapi = "b258ed3179e8414f94df2743db0b0ef2"
@@ -43,12 +43,25 @@ async def speak_async(text):
 
 def speak(text):
     asyncio.run(speak_async(text))
+    time.sleep(0.3)  # small delay to avoid mic conflict
+
+# ---------------- YOUTUBE FUNCTION ----------------
+def get_youtube_link(song_name):
+    ydl_opts = {
+        'quiet': True,
+        'format': 'bestaudio/best'
+    }
+
+    with YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(f"ytsearch:{song_name}", download=False)
+        video = info['entries'][0]
+        return video['webpage_url']
 
 # ---------------- AI FUNCTION ----------------
 def aiProcess(command):
     try:
         client = OpenAI(
-            api_key="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", 
+            api_key="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",
             base_url="https://integrate.api.nvidia.com/v1"
         )
 
@@ -73,7 +86,7 @@ def processCommand(c):
         # ---------- OPEN WEBSITES ----------
         if "open google" in c:
             webbrowser.open("https://google.com")
-        
+
         elif "open facebook" in c:
             webbrowser.open("https://facebook.com")
 
@@ -85,22 +98,32 @@ def processCommand(c):
 
         elif "open github" in c:
             webbrowser.open("https://github.com")
-        
+
         elif "open youtube" in c:
             webbrowser.open("https://youtube.com")
 
-        # ---------- MUSIC ----------
+        # ---------- MUSIC (AUTO PLAY) ----------
         elif c.startswith("play"):
             try:
-                song = c.split(" ")[1]
-                link = musicLibrary.music[song]
-                webbrowser.open(link)
-            except:
-                speak("Song not found")
+                song = c.replace("play", "").replace("song", "").replace("music", "").strip()
+
+                if not song:
+                    speak("Which song should I play?")
+                    return
+
+                speak(f"Playing {song}")
+
+                url = get_youtube_link(song)
+                webbrowser.open(url)
+
+            except Exception as e:
+                print("Music Error:", e)
+                speak("Couldn't find the song")
 
         # ---------- NEWS ----------
         elif "headlines" in c:
             speak("Fetching news...")
+
             r = requests.get(
                 f"https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey={newsapi}"
             )
@@ -135,32 +158,31 @@ if __name__ == "__main__":
     speak("Initializing Micro")
 
     while True:
-        r = sr.Recognizer()
-
         try:
             with sr.Microphone(device_index=2) as source:
-                print("Listening...")
-                audio = r.listen(source, timeout=2, phrase_time_limit=3)
+                print("Listening for wake word...")
+                recognizer.adjust_for_ambient_noise(source, duration=0.5)
+                audio = recognizer.listen(source, timeout=5, phrase_time_limit=5)
 
-            word = r.recognize_google(audio)
-            print("You said:", word)
+            word = recognizer.recognize_google(audio)
+            print("Wake word heard:", word)
 
-            if "hello micro" in word.lower():
+            # More flexible wake detection
+            if "micro" in word.lower():
                 speak(random.choice(responses))
 
-                # Listen for command
                 with sr.Microphone(device_index=2) as source:
                     print("Micro active...")
-                    audio = r.listen(source)
+                    audio = recognizer.listen(source, timeout=5, phrase_time_limit=5)
 
-                command = r.recognize_google(audio)
+                command = recognizer.recognize_google(audio)
                 print("Command:", command)
 
                 processCommand(command)
 
         except sr.WaitTimeoutError:
             pass
-  
+
         except sr.UnknownValueError:
             print("Could not understand")
 
