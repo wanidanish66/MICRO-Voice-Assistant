@@ -23,7 +23,7 @@ recognizer = sr.Recognizer()
 pygame.mixer.init(frequency=22050, size=-16, channels=2)
 
 # here use your own api to fetch news headlines
-newsapi = "USE YOUR API"
+newsapi = "b258ed3179e8414f94df2743db0b0ef2"
 
 # ---------------- SPEAK FUNCTION ----------------
 # Convert text to speech using edge_tts and play it
@@ -73,12 +73,12 @@ def get_youtube_link(song_name):
 def aiProcess(command):
     try:
         client = OpenAI(
-            api_key="YOUR_API_KEY_HERE",                     # visti NVIDIA to get API's  
+            api_key="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",           # visti NVIDIA to get API's  
             base_url="https://integrate.api.nvidia.com/v1"
         )
 
         completion = client.chat.completions.create(
-            model="deepseek-ai/deepseek-v3.1-terminus",
+            model="deepseek-ai/deepseek-v3.1-terminus",  
             messages=[
                 {"role": "system", "content": "You are a virtual assistant named Micro."},
                 {"role": "user", "content": command}
