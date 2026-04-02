@@ -56,7 +56,7 @@ def get_youtube_link(song_name):
 def aiProcess(command):
     try:
         client = OpenAI(
-            api_key="YOUR-OPENAI-KEY-HERE",
+            api_key="YOUR-OPENAI-KEY-HERE",  # try nvidia key if you have one, it works better with their models
             base_url="https://integrate.api.nvidia.com/v1",
         )
         completion = client.chat.completions.create(
