@@ -92,6 +92,9 @@ def processCommand(c, log_func, set_status):
         elif "open youtube" in c:
             webbrowser.open("https://youtube.com")
             log_func("Micro: Opening YouTube...")
+        elif "open whatsapp" in c:
+            webbrowser.open("https://whatsapp.com")
+            log_func("Micro: Opening WhatsApp...")
         elif c.startswith("play"):
             song = c.replace("play", "").replace("song", "").replace("music", "").strip()
             if not song:
